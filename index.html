@@ -9,7 +9,6 @@
     <title>MySchedule - Jadwal Kuliah Pintar</title>
 
     <style>
-        /* CSS kamu tetap, tidak diubah */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #ffffff 0%, #1856bb 100%);
@@ -17,8 +16,7 @@
             padding: 20px;
         }
 
-        input,
-        button {
+        input, select, button {
             padding: 10px;
             margin: 5px;
             border-radius: 8px;
@@ -50,7 +48,18 @@
         <h3>Tambah Jadwal</h3>
 
         <input type="text" id="matkulInput" placeholder="Mata Kuliah">
-        <input type="text" id="hariInput" placeholder="Hari (Senin, Selasa)">
+
+        <!-- FIX: dropdown hari -->
+        <select id="hariInput">
+            <option value="">Pilih Hari</option>
+            <option value="senin">Senin</option>
+            <option value="selasa">Selasa</option>
+            <option value="rabu">Rabu</option>
+            <option value="kamis">Kamis</option>
+            <option value="jumat">Jumat</option>
+            <option value="sabtu">Sabtu</option>
+        </select>
+
         <input type="time" id="jamInput">
 
         <button onclick="addTask()">Tambah Jadwal</button>
@@ -61,10 +70,10 @@
         <button onclick="filterTasks('all')">Semua</button>
         <button onclick="filterTasks('senin')">Senin</button>
         <button onclick="filterTasks('selasa')">Selasa</button>
-        <button onclick="filterTasks('rabu')">rabu</button>
-        <button onclick="filterTasks('kamis')">kamis</button>
-        <button onclick="filterTasks('jumat')">jumat</button>
-        <button onclick="filterTasks('sabtu')">sabtu</button>
+        <button onclick="filterTasks('rabu')">Rabu</button>
+        <button onclick="filterTasks('kamis')">Kamis</button>
+        <button onclick="filterTasks('jumat')">Jumat</button>
+        <button onclick="filterTasks('sabtu')">Sabtu</button>
     </div>
 
     <!-- LIST -->
@@ -88,7 +97,7 @@
 
         function addTask() {
             const matkul = document.getElementById('matkulInput').value.trim();
-            const hari = document.getElementById('hariInput').value.trim();
+            const hari = document.getElementById('hariInput').value;
             const jam = document.getElementById('jamInput').value;
 
             if (matkul === '' || hari === '' || jam === '') {
@@ -99,7 +108,7 @@
             const data = {
                 id: Date.now(),
                 matkul,
-                hari: hari.toLowerCase(),
+                hari,
                 jam,
                 completed: false
             };
@@ -151,7 +160,7 @@
                     <h3 style="${task.completed ? 'text-decoration:line-through' : ''}">
                         ${task.matkul}
                     </h3>
-                    <p>📅 ${task.hari}</p>
+                    <p>📅 ${task.hari.charAt(0).toUpperCase() + task.hari.slice(1)}</p>
                     <p>⏰ ${task.jam}</p>
 
                     <button onclick="toggleTask(${task.id})">
