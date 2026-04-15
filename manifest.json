@@ -2,14 +2,18 @@
   "id": "./",
   "name": "MySchedule - Jadwal Kuliah Pintar",
   "short_name": "MySchedule",
-  "description": "Aplikasi untuk mengelola jadwal kuliah secara praktis, dapat digunakan secara offline dan dapat diinstall seperti aplikasi mobile.",
+  "description": "Aplikasi untuk mengelola jadwal kuliah secara praktis, offline, dan dapat diinstall seperti aplikasi mobile.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#6366f1",
   "theme_color": "#6366f1",
   "orientation": "portrait",
   "lang": "id",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+
   "icons": [
     {
       "src": "icons/icon-192x192-A.png",
@@ -22,6 +26,7 @@
       "type": "image/png"
     }
   ],
+
   "screenshots": [
     {
       "src": "icons/screenshot1.png",
@@ -34,6 +39,7 @@
       "type": "image/png"
     }
   ],
+
   "shortcuts": [
     {
       "name": "Tambah Jadwal",
@@ -47,8 +53,37 @@
       ]
     }
   ],
-  "categories": [
-    "productivity",
-    "education"
-  ]
+
+  "categories": ["productivity", "education"],
+
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text"
+    }
+  },
+
+  "file_handlers": [
+    {
+      "action": "./index.html",
+      "accept": {
+        "text/plain": [".txt"]
+      }
+    }
+  ],
+
+  "protocol_handlers": [
+    {
+      "protocol": "web+myschedule",
+      "url": "./index.html"
+    }
+  ],
+
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+
+  "widgets": []
 }

@@ -68,3 +68,28 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+// PUSH NOTIFICATION
+self.addEventListener("push", event => {
+  const data = event.data ? event.data.text() : "Jadwal baru tersedia!";
+
+  event.waitUntil(
+    self.registration.showNotification("MySchedule", {
+      body: data,
+      icon: "icons/icon-192x192-A.png"
+    })
+  );
+});
+
+// BACKGROUND SYNC
+self.addEventListener("sync", event => {
+  if (event.tag === "sync-tasks") {
+    console.log("Sinkronisasi tugas...");
+  }
+});
+
+// PERIODIC SYNC
+self.addEventListener("periodicsync", event => {
+  if (event.tag === "update-data") {
+    console.log("Update berkala...");
+  }
+});
