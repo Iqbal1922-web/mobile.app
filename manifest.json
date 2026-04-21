@@ -3,87 +3,28 @@
   "name": "MySchedule - Jadwal Kuliah Pintar",
   "short_name": "MySchedule",
   "description": "Aplikasi untuk mengelola jadwal kuliah secara praktis, offline, dan dapat diinstall seperti aplikasi mobile.",
+
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#6366f1",
   "theme_color": "#6366f1",
   "orientation": "portrait",
-  "lang": "id",
-  "dir": "ltr",
-  "prefer_related_applications": false,
 
   "icons": [
     {
-     "src": "icons/icon-192x192.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  },
-  {
-    "src": "icons/icon-512x512.png",
-    "sizes": "512x512",
-    "type": "image/png"
-    }
-  ],
-
-  "screenshots": [
-    {
-      "src": "icons/screenshot1.png",
-      "sizes": "1080x1920",
-      "type": "image/png"
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icons/screenshot2.png",
-      "sizes": "1080x1920",
-      "type": "image/png"
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
 
-  "shortcuts": [
-    {
-      "name": "Tambah Jadwal",
-      "short_name": "Tambah",
-      "url": "./index.html",
-      "icons": [
-        {
-          "src": "icons/icon-192x192-A.png",
-          "sizes": "192x192"
-        }
-      ]
-    }
-  ],
-
-  "categories": ["productivity", "education"],
-
-  "share_target": {
-    "action": "./index.html",
-    "method": "GET",
-    "params": {
-      "title": "title",
-      "text": "text"
-    }
-  },
-
-  "file_handlers": [
-    {
-      "action": "./index.html",
-      "accept": {
-        "text/plain": [".txt"]
-      }
-    }
-  ],
-
-  "protocol_handlers": [
-    {
-      "protocol": "web+myschedule",
-      "url": "./index.html"
-    }
-  ],
-
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  },
-
-  "widgets": []
+  "categories": ["productivity", "education"]
 }
