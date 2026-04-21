@@ -5,7 +5,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#6366f1" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192x192.png">
+
     <title>MySchedule - Jadwal Kuliah Pintar</title>
 
     <style>
@@ -35,6 +40,11 @@
             border-radius: 12px;
             margin-bottom: 15px;
         }
+
+        #installBtn {
+            display: none;
+            background: #22c55e;
+        }
     </style>
 </head>
 
@@ -43,13 +53,15 @@
     <h1>📚 MySchedule</h1>
     <p>Kelola jadwal kuliahmu dengan mudah</p>
 
+    <!-- INSTALL BUTTON -->
+    <button id="installBtn">Install Aplikasi</button>
+
     <!-- INPUT -->
     <div class="card">
         <h3>Tambah Jadwal</h3>
 
         <input type="text" id="matkulInput" placeholder="Mata Kuliah">
 
-        <!-- FIX: dropdown hari -->
         <select id="hariInput">
             <option value="">Pilih Hari</option>
             <option value="senin">Senin</option>
@@ -82,6 +94,7 @@
     <script>
         let tasks = [];
         let currentFilter = 'all';
+        let deferredPrompt;
 
         function loadTasks() {
             const saved = localStorage.getItem('myschedule');
@@ -115,12 +128,14 @@
 
             tasks.push(data);
 
+            saveTasks();
+            renderTasks();
+
+            kirimNotifikasi(matkul);
+
             document.getElementById('matkulInput').value = '';
             document.getElementById('hariInput').value = '';
             document.getElementById('jamInput').value = '';
-
-            saveTasks();
-            renderTasks();
         }
 
         function deleteTask(id) {
@@ -160,7 +175,7 @@
                     <h3 style="${task.completed ? 'text-decoration:line-through' : ''}">
                         ${task.matkul}
                     </h3>
-                    <p>📅 ${task.hari.charAt(0).toUpperCase() + task.hari.slice(1)}</p>
+                    <p>📅 ${task.hari}</p>
                     <p>⏰ ${task.jam}</p>
 
                     <button onclick="toggleTask(${task.id})">
@@ -171,11 +186,40 @@
             `).join('');
         }
 
+        // 🔔 NOTIFIKASI
+        function kirimNotifikasi(matkul) {
+            if (Notification.permission === "granted") {
+                new Notification("Jadwal Ditambahkan", {
+                    body: matkul + " berhasil ditambahkan!"
+                });
+            }
+        }
+
+        if ("Notification" in window) {
+            Notification.requestPermission();
+        }
+
+        // 📲 INSTALL PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'block';
+        });
+
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+        });
+
+        // LOAD
         loadTasks();
 
-        // PWA
+        // SERVICE WORKER
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./service-worker.js');
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(() => console.log("SW aktif"))
+                .catch(err => console.log(err));
         }
     </script>
 

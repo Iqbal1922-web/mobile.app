@@ -5,7 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#4F46E5" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192x192.png">
+
   <title>MySchedule - Jadwal Kuliah Pintar</title>
   <link rel="stylesheet" href="assets/style.css" />
 </head>
@@ -43,7 +48,7 @@
   </footer>
 
   <script>
-    let jadwal = [];
+    let jadwal = JSON.parse(localStorage.getItem("jadwal")) || [];
 
     function tambahJadwal() {
       let matkul = document.getElementById("matkul").value;
@@ -55,21 +60,22 @@
         return;
       }
 
-      let data = {
-        matkul,
-        hari,
-        jam
-      };
+      let data = { matkul, hari, jam };
 
       jadwal.push(data);
+
+      // simpan ke localStorage (OFFLINE SUPPORT)
+      localStorage.setItem("jadwal", JSON.stringify(jadwal));
+
       tampilkanJadwal();
+      kirimNotifikasi(matkul);
     }
 
     function tampilkanJadwal() {
       let list = document.getElementById("listJadwal");
       list.innerHTML = "";
 
-      jadwal.forEach((item, index) => {
+      jadwal.forEach((item) => {
         list.innerHTML += `
           <li>
             ${item.matkul} - ${item.hari} (${item.jam})
@@ -78,9 +84,28 @@
       });
     }
 
-    // PWA aktif
+    // NOTIFIKASI
+    function kirimNotifikasi(matkul) {
+      if (Notification.permission === "granted") {
+        new Notification("Jadwal Ditambahkan", {
+          body: matkul + " berhasil ditambahkan!"
+        });
+      }
+    }
+
+    // Minta izin notifikasi
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
+
+    // LOAD DATA SAAT BUKA
+    tampilkanJadwal();
+
+    // SERVICE WORKER (PWA)
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js');
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log("Service Worker aktif"))
+        .catch(err => console.log("SW gagal:", err));
     }
   </script>
 
