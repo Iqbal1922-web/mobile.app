@@ -111,4 +111,20 @@
 ],
 
 "lang": "id"
+,
+"dir": "ltr",
+
+"display_override": ["window-controls-overlay", "standalone"],
+
+"prefer_related_applications": false,
+
+"related_applications": [],
+
+"iarc_rating_id": "",
+
+"scope_extensions": [],
+
+"note_taking": {
+  "new_note_url": "./index.html"
+}
 }
