@@ -1,228 +1,178 @@
-<!DOCTYPE html>
-<html lang="id">
+<script>
+    let tasks = [];
+    let currentFilter = 'all';
+    let deferredPrompt;
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#6366f1" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="icons/icon-192x192.png">
-
-    <title>MySchedule - Jadwal Kuliah Pintar</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #ffffff 0%, #1856bb 100%);
-            color: white;
-            padding: 20px;
-        }
-
-        input, select, button {
-            padding: 10px;
-            margin: 5px;
-            border-radius: 8px;
-            border: none;
-        }
-
-        button {
-            background: #6366f1;
-            color: white;
-            cursor: pointer;
-        }
-
-        .card {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        #installBtn {
-            display: none;
-            background: #22c55e;
-        }
-    </style>
-</head>
-
-<body>
-
-    <h1>📚 MySchedule</h1>
-    <p>Kelola jadwal kuliahmu dengan mudah</p>
-
-    <!-- INSTALL BUTTON -->
-    <button id="installBtn">Install Aplikasi</button>
-
-    <!-- INPUT -->
-    <div class="card">
-        <h3>Tambah Jadwal</h3>
-
-        <input type="text" id="matkulInput" placeholder="Mata Kuliah">
-
-        <select id="hariInput">
-            <option value="">Pilih Hari</option>
-            <option value="senin">Senin</option>
-            <option value="selasa">Selasa</option>
-            <option value="rabu">Rabu</option>
-            <option value="kamis">Kamis</option>
-            <option value="jumat">Jumat</option>
-            <option value="sabtu">Sabtu</option>
-        </select>
-
-        <input type="time" id="jamInput">
-
-        <button onclick="addTask()">Tambah Jadwal</button>
-    </div>
-
-    <!-- FILTER -->
-    <div class="card">
-        <button onclick="filterTasks('all')">Semua</button>
-        <button onclick="filterTasks('senin')">Senin</button>
-        <button onclick="filterTasks('selasa')">Selasa</button>
-        <button onclick="filterTasks('rabu')">Rabu</button>
-        <button onclick="filterTasks('kamis')">Kamis</button>
-        <button onclick="filterTasks('jumat')">Jumat</button>
-        <button onclick="filterTasks('sabtu')">Sabtu</button>
-    </div>
-
-    <!-- LIST -->
-    <div id="tasksList"></div>
-
-    <script>
-        let tasks = [];
-        let currentFilter = 'all';
-        let deferredPrompt;
-
-        function loadTasks() {
-            const saved = localStorage.getItem('myschedule');
-            if (saved) {
-                tasks = JSON.parse(saved);
-                renderTasks();
-            }
-        }
-
-        function saveTasks() {
-            localStorage.setItem('myschedule', JSON.stringify(tasks));
-        }
-
-        function addTask() {
-            const matkul = document.getElementById('matkulInput').value.trim();
-            const hari = document.getElementById('hariInput').value;
-            const jam = document.getElementById('jamInput').value;
-
-            if (matkul === '' || hari === '' || jam === '') {
-                alert('Isi semua data!');
-                return;
-            }
-
-            const data = {
-                id: Date.now(),
-                matkul,
-                hari,
-                jam,
-                completed: false
-            };
-
-            tasks.push(data);
-
-            saveTasks();
-            renderTasks();
-
-            kirimNotifikasi(matkul);
-
-            document.getElementById('matkulInput').value = '';
-            document.getElementById('hariInput').value = '';
-            document.getElementById('jamInput').value = '';
-        }
-
-        function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
-            saveTasks();
+    // ========================
+    // LOCAL STORAGE
+    // ========================
+    function loadTasks() {
+        const saved = localStorage.getItem('myschedule');
+        if (saved) {
+            tasks = JSON.parse(saved);
             renderTasks();
         }
+    }
 
-        function toggleTask(id) {
-            const task = tasks.find(t => t.id === id);
-            task.completed = !task.completed;
-            saveTasks();
-            renderTasks();
+    function saveTasks() {
+        localStorage.setItem('myschedule', JSON.stringify(tasks));
+    }
+
+    // ========================
+    // CRUD
+    // ========================
+    function addTask() {
+        const matkul = document.getElementById('matkulInput').value.trim();
+        const hari = document.getElementById('hariInput').value;
+        const jam = document.getElementById('jamInput').value;
+
+        if (matkul === '' || hari === '' || jam === '') {
+            alert('Isi semua data!');
+            return;
         }
 
-        function filterTasks(filter) {
-            currentFilter = filter;
-            renderTasks();
+        const data = {
+            id: Date.now(),
+            matkul,
+            hari,
+            jam,
+            completed: false
+        };
+
+        tasks.push(data);
+
+        saveTasks();
+        renderTasks();
+
+        kirimNotifikasi(matkul);
+
+        document.getElementById('matkulInput').value = '';
+        document.getElementById('hariInput').value = '';
+        document.getElementById('jamInput').value = '';
+    }
+
+    function deleteTask(id) {
+        tasks = tasks.filter(t => t.id !== id);
+        saveTasks();
+        renderTasks();
+    }
+
+    function toggleTask(id) {
+        const task = tasks.find(t => t.id === id);
+        task.completed = !task.completed;
+        saveTasks();
+        renderTasks();
+    }
+
+    function filterTasks(filter) {
+        currentFilter = filter;
+        renderTasks();
+    }
+
+    function renderTasks() {
+        const container = document.getElementById('tasksList');
+
+        let filtered = tasks;
+
+        if (currentFilter !== 'all') {
+            filtered = tasks.filter(t => t.hari === currentFilter);
         }
 
-        function renderTasks() {
-            const container = document.getElementById('tasksList');
+        if (filtered.length === 0) {
+            container.innerHTML = "<p>Tidak ada jadwal</p>";
+            return;
+        }
 
-            let filtered = tasks;
+        container.innerHTML = filtered.map(task => `
+            <div class="card">
+                <h3 style="${task.completed ? 'text-decoration:line-through' : ''}">
+                    ${task.matkul}
+                </h3>
+                <p>📅 ${task.hari}</p>
+                <p>⏰ ${task.jam}</p>
 
-            if (currentFilter !== 'all') {
-                filtered = tasks.filter(t => t.hari === currentFilter);
+                <button onclick="toggleTask(${task.id})">
+                    ${task.completed ? 'Batal' : 'Selesai'}
+                </button>
+                <button onclick="deleteTask(${task.id})">Hapus</button>
+            </div>
+        `).join('');
+    }
+
+    // ========================
+    // 🔔 NOTIFICATION
+    // ========================
+    function kirimNotifikasi(matkul) {
+        if (Notification.permission === "granted") {
+            new Notification("Jadwal Ditambahkan", {
+                body: matkul + " berhasil ditambahkan!"
+            });
+        }
+    }
+
+    if ("Notification" in window) {
+        Notification.requestPermission();
+    }
+
+    // ========================
+    // 📲 INSTALL PWA
+    // ========================
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBtn').style.display = 'block';
+    });
+
+    document.getElementById('installBtn').addEventListener('click', async () => {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+    });
+
+    // ========================
+    // 📤 SHARE TARGET HANDLER
+    // ========================
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("text") || params.get("title")) {
+        alert("Data diterima: " + (params.get("text") || params.get("title")));
+    }
+
+    // ========================
+    // 📂 FILE HANDLER
+    // ========================
+    if ('launchQueue' in window) {
+        window.launchQueue.setConsumer(async (launchParams) => {
+            if (launchParams.files.length > 0) {
+                alert("File dibuka dari aplikasi!");
             }
-
-            if (filtered.length === 0) {
-                container.innerHTML = "<p>Tidak ada jadwal</p>";
-                return;
-            }
-
-            container.innerHTML = filtered.map(task => `
-                <div class="card">
-                    <h3 style="${task.completed ? 'text-decoration:line-through' : ''}">
-                        ${task.matkul}
-                    </h3>
-                    <p>📅 ${task.hari}</p>
-                    <p>⏰ ${task.jam}</p>
-
-                    <button onclick="toggleTask(${task.id})">
-                        ${task.completed ? 'Batal' : 'Selesai'}
-                    </button>
-                    <button onclick="deleteTask(${task.id})">Hapus</button>
-                </div>
-            `).join('');
-        }
-
-        // 🔔 NOTIFIKASI
-        function kirimNotifikasi(matkul) {
-            if (Notification.permission === "granted") {
-                new Notification("Jadwal Ditambahkan", {
-                    body: matkul + " berhasil ditambahkan!"
-                });
-            }
-        }
-
-        if ("Notification" in window) {
-            Notification.requestPermission();
-        }
-
-        // 📲 INSTALL PWA
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBtn').style.display = 'block';
         });
+    }
 
-        document.getElementById('installBtn').addEventListener('click', async () => {
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-            deferredPrompt = null;
-        });
+    // ========================
+    // 🔗 PROTOCOL HANDLER
+    // ========================
+    if (window.location.protocol === "web+myschedule:") {
+        alert("Protocol MySchedule aktif!");
+    }
 
-        // LOAD
-        loadTasks();
+    // ========================
+    // 📡 WEB SHARE API DETECT
+    // ========================
+    if (navigator.share) {
+        console.log("Web Share API aktif");
+    }
 
-        // SERVICE WORKER
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./service-worker.js')
-                .then(() => console.log("SW aktif"))
-                .catch(err => console.log(err));
-        }
-    </script>
+    // ========================
+    // LOAD DATA
+    // ========================
+    loadTasks();
 
-</body>
-
-</html>
+    // ========================
+    // SERVICE WORKER
+    // ========================
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(() => console.log("Service Worker aktif"))
+            .catch(err => console.log(err));
+    }
+</script>
