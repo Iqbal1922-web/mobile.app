@@ -92,4 +92,68 @@ self.addEventListener("periodicsync", event => {
   if (event.tag === "update-data") {
     console.log("Update berkala...");
   }
+
+// PERIODIC SYNC
+self.addEventListener("periodicsync", event => {
+  if (event.tag === "update-data") {
+    console.log("Update berkala...");
+  }
+});
+});
+
+// ========================
+// 🔥 NAVIGATION FALLBACK
+// ========================
+self.addEventListener("fetch", event => {
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match(`${BASE_URL}offline.html`);
+      })
+    );
+  }
+});
+
+// ========================
+// 🔄 UPDATE CACHE BACKGROUND
+// ========================
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return fetch(event.request)
+        .then(response => {
+          cache.put(event.request, response.clone());
+        })
+        .catch(() => {});
+    })
+  );
+});
+
+// ========================
+// 📩 MESSAGE HANDLER
+// ========================
+self.addEventListener("message", event => {
+  if (event.data === "skipWaiting") {
+    self.skipWaiting();
+  }
+});
+
+// ========================
+// 🔔 NOTIFICATION CLICK
+// ========================
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+
+  event.waitUntil(
+    clients.openWindow(`${BASE_URL}index.html`)
+  );
+});
+
+// ========================
+// 📦 INSTALL LOG
+// ========================
+self.addEventListener("install", () => {
+  console.log("SW versi terbaru aktif 🚀");
 });
