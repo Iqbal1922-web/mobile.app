@@ -1,10 +1,10 @@
 {
-  "id": "./",
+  "id": "myschedule-app",
   "name": "MySchedule - Jadwal Kuliah Pintar",
   "short_name": "MySchedule",
   "description": "Aplikasi untuk mengelola jadwal kuliah secara praktis, offline, dan dapat diinstall seperti aplikasi mobile.",
 
-  "start_url": "./index.html",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
   "background_color": "#6366f1",
@@ -16,7 +16,7 @@
       "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     },
     {
       "src": "icons/icon-512x512.png",
@@ -96,14 +96,15 @@
 
   "shortcuts": [
     {
-      "name": "Tambah Jadwal",
-      "short_name": "Tambah",
-      "url": "./index.html",
-      "icons": [
-        {
-          "src": "icons/icon-192x192.png",
-          "sizes": "192x192",
-          "type": "image/png"
+       "name": "Tambah Jadwal",
+    "short_name": "Tambah",
+    "description": "Tambah jadwal kuliah baru",
+    "url": "./index.html",
+    "icons": [
+      {
+        "src": "icons/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
         }
       ]
     }
