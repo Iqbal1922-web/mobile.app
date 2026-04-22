@@ -64,6 +64,7 @@
       "name": "MySchedule Widget",
       "short_name": "Schedule",
       "description": "Lihat jadwal cepat",
+      "tag": "myschedule-widget",
       "icons": [
         {
           "src": "icons/icon-192x192.png",
@@ -115,9 +116,20 @@
 
   "prefer_related_applications": false,
 
-  "iarc_rating_id": "",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "./index.html"
+    }
+  ],
 
-  "scope_extensions": [],
+  "iarc_rating_id": "e",
+
+  "scope_extensions": [
+    {
+      "origin": "./"
+    }
+  ],
 
   "note_taking": {
     "new_note_url": "./index.html"
